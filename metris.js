@@ -1,7 +1,7 @@
 const xlsx = require("xlsx");
 
 const start_block = 17427383;
-const needed = 100
+const needed = 10
 
 async function get_detail_of_block(block) {
 	const data = await fetch(
