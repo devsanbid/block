@@ -1,6 +1,7 @@
 const xlsx = require("xlsx");
 
 const start_block = 17427383;
+const needed = 100
 
 async function get_detail_of_block(block) {
 	const data = await fetch(
@@ -9,16 +10,19 @@ async function get_detail_of_block(block) {
 	const result_data = await data.json();
 	const hash = result_data.items[0].hash;
 	return {
-		Hash: hash,
-		Types: `${result_data.items[0].tx_types[0]} , ${result_data.items[0].tx_types[1] || ''}`,
-		Address: result_data.items[0].from.hash,
-		URL: `https://andromeda-explorer.metis.io/tx/${hash}`,
+        Network: "Metis",
+        Address: result_data.items[0].from.hash,
+        Category: "Infra,L2,Wallet",
+        Entity: "Metis",
+		"Evidence(TxHash)": hash,
+        "Evidence(Link)": `https://andromeda-explorer.metis.io/tx/${hash}`,
+        "Evidence(Text)": `${result_data.items[0].tx_types[0]} , ${result_data.items[0].tx_types[1] || ''}`,
 	};
 }
 
 async function main() {
 	const blockData = [];
-	for (let i = 1; i < 10; i++) {
+	for (let i = 1; i < needed; i++) {
 		const start = start_block + i;
         console.log(`starting ${i}`)
 		const blockDetail = await get_detail_of_block(start);
