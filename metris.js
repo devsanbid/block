@@ -4,11 +4,13 @@ const puppeteer = require("puppeteer");
 const start_block = 17427383;
 const needed = 15;
 const address_collection = [];
+let screenshot_no = 2
 
 async function screenshot(url,page_no) {
-	const browser = await puppeteer.launch({
-		executablePath: "/usr/bin/google-chrome-stable",
-	});
+	// const browser = await puppeteer.launch({
+	// 	executablePath: "/usr/bin/google-chrome-stable",
+	// });
+    const browser = await puppeteer.launch();
 	const page = await browser.newPage();
 	await page.goto(
 		url
@@ -34,6 +36,7 @@ async function main() {
 		const address = result_data.items[0].from.hash;
 
 		let flag = 0;
+        let i = 1
 
 		for (let i = 0; i < address_collection.length; i++) {
 			if (address === address_collection[i]) {
@@ -48,10 +51,9 @@ async function main() {
 
         console.log(`starting ${j}`);
 
-        let i = 1
-        await screenshot(`https://andromeda-explorer.metis.io/tx/${hash}`,1)
-        print("Screenshot done ", i)
-        i++
+        await screenshot(`https://andromeda-explorer.metis.io/tx/${hash}`,screenshot_no)
+        console.log("Screenshot done ", screenshot_no)
+        screenshot_no++
 
 		const blockDetail = {
 			Network: "Metis",
