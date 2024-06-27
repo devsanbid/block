@@ -1,32 +1,69 @@
 const xlsx = require("xlsx");
+const puppeteer = require("puppeteer");
 
 const start_block = 17427383;
 const needed = 15;
+const address_collection = [];
 
-async function get_detail_of_block(block) {
-	const data = await fetch(
-		`https://andromeda-explorer.metis.io/api/v2/blocks/${block}/transactions`,
+async function screenshot(url,page_no) {
+	const browser = await puppeteer.launch({
+		executablePath: "/usr/bin/google-chrome-stable",
+	});
+	const page = await browser.newPage();
+	await page.goto(
+		url
 	);
-	const result_data = await data.json();
-	const hash = result_data.items[0].hash;
-	return {
-		Network: "Metis",
-		Address: result_data.items[0].from.hash,
-		Category: "Infra,L2,Wallet",
-		Entity: "Metis",
-		"Evidence(TxHash)": hash,
-		"Evidence(Link)": `https://andromeda-explorer.metis.io/tx/${hash}`,
-		"Evidence(Text)": `${result_data.items[0].tx_types[0]} , ${result_data.items[0].tx_types[1] || ""}`,
-	};
+	await page.setViewport({ width: 1830, height: 850 });
+	await page.evaluate(() => window.scrollBy(0, 150));
+
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	await page.screenshot({ path: `Screenshot/${page_no}.png` });
+	await browser.close();
 }
 
 async function main() {
 	const blockData = [];
-	for (let i = 1; i < needed; i++) {
+	for (let j = 0; j < needed; j++) {
 		const random_int = Math.floor(Math.random() * 15);
 		const start = start_block + random_int;
-		console.log(`starting ${i}`);
-		const blockDetail = await get_detail_of_block(start);
+		const data = await fetch(
+			`https://andromeda-explorer.metis.io/api/v2/blocks/${start}/transactions`,
+		);
+		const result_data = await data.json();
+		const hash = result_data.items[0].hash;
+		const address = result_data.items[0].from.hash;
+
+		let flag = 0;
+
+		for (let i = 0; i < address_collection.length; i++) {
+			if (address === address_collection[i]) {
+				flag += 1;
+				break;
+			}
+		}
+
+		if (flag === 1) {
+			continue;
+		}
+
+        console.log(`starting ${j}`);
+
+        let i = 1
+        await screenshot(`https://andromeda-explorer.metis.io/tx/${hash}`,1)
+        print("Screenshot done ", i)
+        i++
+
+		const blockDetail = {
+			Network: "Metis",
+			Address: result_data.items[0].from.hash,
+			Category: "Infra,L2,Wallet",
+			Entity: "Metis",
+			"Evidence(TxHash)": hash,
+			"Evidence(Link)": `https://andromeda-explorer.metis.io/tx/${hash}`,
+			"Evidence(Text)": `${result_data.items[0].tx_types[0]} , ${result_data.items[0].tx_types[1] || ""}`,
+		};
+
+		address_collection.push(address);
 		blockData.push(blockDetail);
 	}
 	const wb = xlsx.utils.book_new();
