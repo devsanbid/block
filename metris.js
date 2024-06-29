@@ -7,10 +7,7 @@ const address_collection = [];
 let screenshot_no = 2
 
 async function screenshot(url,page_no) {
-	// const browser = await puppeteer.launch({
-	// 	executablePath: "/usr/bin/google-chrome-stable",
-	// });
-    const browser = await puppeteer.launch();
+   const browser = await puppeteer.launch({executablePath: "/usr/bin/google-chrome-stable"})
 	const page = await browser.newPage();
 	await page.goto(
 		url
