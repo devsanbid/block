@@ -1,7 +1,4 @@
 
 node_modules/
 .env
-Screenshot/*
-eth_Screenshot/*
-block_data.xlsx
-ethereum.xlsx
+*.xlsx
