@@ -1,11 +1,11 @@
-const API_KEY = process.env.ETH_KEY
+const API_KEY = process.env.ETH_KEY;
 const BASE_URL = "https://api.etherscan.io/api";
+
 const xlsx = require("xlsx");
 const puppeteer = require("puppeteer");
 
-const needed = 20;
-const address_collection = [];
-const BLOCK_NUMBER = 20197654;
+const needed = 80;
+let BLOCK_NUMBER = 20198654;
 let screenshot_no = 2;
 
 async function getBlockAndTransactionData(blockNumber) {
@@ -19,10 +19,10 @@ async function getBlockAndTransactionData(blockNumber) {
 	};
 }
 
-async function screenshot(url, page_no) {
+async function screenshot(url) {
 	const browser = await puppeteer.launch({
 		executablePath: "/usr/bin/chromium",
-		headless: false, // Set to true for headless mode
+		headless: false, 
 		defaultViewport: null,
 	});
 	const page = await browser.newPage();
@@ -32,39 +32,22 @@ async function screenshot(url, page_no) {
 	await page.evaluate(() => window.scrollBy(0, 150));
 
 	await new Promise((resolve) => setTimeout(resolve, 1000));
-	await page.screenshot({ path: `eth_Screenshot/${page_no}.png` });
+	await page.screenshot({ path: `eth_Screenshot/${screenshot_no}.png` });
 	await browser.close();
+	screenshot_no++;
 }
 
 async function main() {
 	const blockData = [];
 	for (let j = 0; j < needed; j++) {
-		const random_int = Math.floor(Math.random() * 15);
-		const start = BLOCK_NUMBER + random_int;
-		console.log(start);
-		const result_data = await getBlockAndTransactionData(start);
+		BLOCK_NUMBER++;
+		const result_data = await getBlockAndTransactionData(BLOCK_NUMBER);
+        console.log(`${j}: Block no ${BLOCK_NUMBER}`)
 
 		const hash = result_data.hash;
 		const address = result_data.address;
 
-		let flag = 0;
-
-		for (let i = 0; i < address_collection.length; i++) {
-			if (address === address_collection[i]) {
-				flag += 1;
-				break;
-			}
-		}
-
-		if (flag === 1) {
-			continue;
-		}
-
-		console.log(`starting ${j}`);
-
-		await screenshot(`https://etherscan.io/tx/${hash}`, screenshot_no);
-		console.log("Screenshot done ", screenshot_no);
-		screenshot_no++;
+		await screenshot(`https://etherscan.io/tx/${hash}`);
 
 		const blockDetail = {
 			Network: "Ethereum",
@@ -76,7 +59,6 @@ async function main() {
 			"Evidence(Text)": " ",
 		};
 
-		address_collection.push(address);
 		blockData.push(blockDetail);
 	}
 	const wb = xlsx.utils.book_new();
