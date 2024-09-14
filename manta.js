@@ -1,10 +1,9 @@
 const xlsx = require("xlsx");
 const puppeteer = require("puppeteer");
-const jsonpath = require("jsonpath-plus"); // For data extraction (optional)
 
 async function main() {
   const startBlock = 3184471; 
-  const endBlock = 3184480; 
+  const endBlock = 3184472; 
   const address_collection = [];
   let screenshot_no = 2;
 
@@ -19,6 +18,8 @@ async function main() {
 
       for (const item of data.items) {
         const fromAddress = item.from.hash;
+        const hashTx = `https://pacific-explorer.manta.network/tx/${item.hash}`; 
+        const hashID = item.hash;
 
         let flag = 0;
         for (let i = 0; i < address_collection.length; i++) {
@@ -32,7 +33,9 @@ async function main() {
           const blockDetail = {
             Network: "Manta",
             Address: fromAddress,
-            // ... Extract other relevant data from 'item' using jsonpath or manually
+            category: "Wallet",
+            link: hashTx,
+            hashID,
           };
 
           address_collection.push(fromAddress);
@@ -42,7 +45,6 @@ async function main() {
           screenshot_no++;
 
           console.log(`Processing transaction ${item.hash}`);
-          // Add blockDetail object to your data structure for further processing (e.g., write to spreadsheet)
         }
       }
     } catch (error) {
@@ -52,7 +54,6 @@ async function main() {
 
   await browser.close();
 
-  // Write data to spreadsheet (assuming you have collected block details)
   const wb = xlsx.utils.book_new();
   const ws = xlsx.utils.json_to_sheet(blockData);
   xlsx.utils.book_append_sheet(wb, ws, "Block Details");
