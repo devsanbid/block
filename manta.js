@@ -6,6 +6,7 @@ async function main() {
   const endBlock = 3184472; 
   const address_collection = [];
   let screenshot_no = 2;
+    const blockData = []
 
   const browser = await puppeteer.launch({ executablePath: "/run/current-system/sw/bin/chromium" });
 
@@ -45,6 +46,7 @@ async function main() {
           screenshot_no++;
 
           console.log(`Processing transaction ${item.hash}`);
+          blockData.push(blockDetail)
         }
       }
     } catch (error) {
