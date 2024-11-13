@@ -21,7 +21,7 @@ async function getBlockAndTransactionData(blockNumber) {
 
 async function screenshot(url) {
 	const browser = await puppeteer.launch({
-		executablePath: "/usr/bin/chromium",
+		executablePath: "/run/current-system/sw/bin/chromium",
 		headless: false, 
 		defaultViewport: null,
 	});
