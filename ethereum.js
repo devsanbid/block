@@ -22,8 +22,6 @@ async function getBlockAndTransactionData(blockNumber) {
 async function screenshot(url) {
 	const browser = await puppeteer.launch({
 		executablePath: "/run/current-system/sw/bin/chromium",
-		headless: false, 
-		defaultViewport: null,
 	});
 	const page = await browser.newPage();
 	await page.goto(url);
@@ -33,7 +31,6 @@ async function screenshot(url) {
 
 	await new Promise((resolve) => setTimeout(resolve, 1000));
 	await page.screenshot({ path: `eth_Screenshot/${screenshot_no}.png` });
-	await browser.close();
 	screenshot_no++;
 }
 
@@ -42,7 +39,7 @@ async function main() {
 	for (let j = 0; j < needed; j++) {
 		BLOCK_NUMBER++;
 		const result_data = await getBlockAndTransactionData(BLOCK_NUMBER);
-        console.log(`${j}: Block no ${BLOCK_NUMBER}`)
+		console.log(`${j}: Block no ${BLOCK_NUMBER}`);
 
 		const hash = result_data.hash;
 		const address = result_data.address;
